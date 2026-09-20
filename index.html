@@ -26,8 +26,493 @@ body.a4 .char{text-align:left;font-weight:700}body.focus #top,body.focus #bottom
 .stampGroup{margin:14px 0 5px;padding:0 9px 5px;border-bottom:1px solid var(--line);font-size:12px;font-weight:850;letter-spacing:.04em}
 .stampGroup:first-child{margin-top:10px}
 @media(max-width:900px){.reviewDelete{width:36px;height:36px;min-height:36px;line-height:36px;opacity:.72}#review .item{padding-right:46px}}
+
+#sequenceView{display:none;height:100%;overflow:auto;background:#f8f2e9;color:#352b26;--brown-950:#38251d;--brown-900:#4a3025;--brown-800:#604033;--cream:#f8f2e9;--cream-2:#fffaf3;--line:#e5d8ca;--muted:#806f62;--text:#352b26;--accent:#8a5a3b;--accent-soft:#ead9ca}body.sequenceMode #app{display:none}body.sequenceMode #sequenceView{display:block}.seqBackBar{position:sticky;top:0;z-index:30;padding:8px 10px;background:rgba(248,242,233,.94);border-bottom:1px solid #e5d8ca}.seqBackBtn{border:1px solid #e5d8ca;background:#fffaf3;color:#4a3025;border-radius:10px;min-height:40px;padding:8px 12px;font:inherit;font-weight:800;cursor:pointer}#seqOpen{font-weight:850;min-width:42px}
+
+    #sequenceView {
+      --brown-950: #38251d;
+      --brown-900: #4a3025;
+      --brown-800: #604033;
+      --cream: #f8f2e9;
+      --cream-2: #fffaf3;
+      --line: #e5d8ca;
+      --muted: #806f62;
+      --text: #352b26;
+      --accent: #8a5a3b;
+      --accent-soft: #ead9ca;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--text);
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Apple SD Gothic Neo",
+        "Noto Sans KR",
+        sans-serif;
+    }
+
+    #sequenceView #sequence-calculator {
+      width: min(100%, 720px);
+      margin: 0 auto;
+      padding: 24px 14px 40px;
+    }
+
+    .hero {
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      color: var(--brown-950);
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .input-card {
+      padding: 16px;
+      background: var(--cream-2);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(56, 37, 29, 0.04);
+      margin-bottom: 14px;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .seq-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .seq-field label {
+      color: var(--brown-950);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .seq-field input {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      outline: none;
+      background: #fff;
+      color: var(--brown-950);
+      -webkit-text-fill-color: var(--brown-950);
+      caret-color: var(--brown-950);
+      font: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .seq-field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(138, 90, 59, 0.12);
+    }
+
+    .seq-field input::placeholder {
+      color: #b5a79c;
+      -webkit-text-fill-color: #b5a79c;
+    }
+
+    .preset-section {
+      background: var(--cream-2);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 20px rgba(56, 37, 29, 0.04);
+    }
+
+    .preset-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .preset-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--brown-950);
+    }
+
+    .preset-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .preset-chip {
+      padding: 5px 10px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--brown-800);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .preset-chip:hover {
+      background: var(--accent-soft);
+      border-color: #d8c4b2;
+    }
+
+    .preset-del {
+      font-size: 10px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .preset-del:hover {
+      color: #c0392b;
+    }
+
+    .preset-add-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .preset-add-row input {
+      flex: 1;
+      height: 36px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 12px;
+      outline: none;
+      background: #fff;
+      color: var(--brown-950);
+    }
+
+    .preset-add-btn {
+      height: 36px;
+      padding: 0 12px;
+      background: var(--brown-900);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .preset-add-btn:hover {
+      background: var(--brown-800);
+    }
+
+    .results {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .result-card {
+      padding: 12px 14px;
+      background: var(--cream-2);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .result-card .label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .result-card .value {
+      margin-top: 5px;
+      color: var(--brown-950);
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.3;
+      letter-spacing: -0.03em;
+    }
+
+    .result-card.main {
+      background: var(--brown-900);
+      border-color: var(--brown-900);
+    }
+
+    .result-card.main .label,
+    .result-card.main .value {
+      color: #fff;
+    }
+
+    .table-section {
+      margin-top: 16px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      color: var(--brown-950);
+      font-size: 17px;
+      letter-spacing: -0.04em;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--cream-2);
+      box-shadow: 0 6px 20px rgba(56, 37, 29, 0.03);
+    }
+
+    table {
+      width: 100%;
+      min-width: 460px;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--brown-900);
+      color: #fff;
+    }
+
+    th {
+      padding: 10px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: center;
+      width: 40px;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fcf7f0;
+    }
+
+    td {
+      padding: 10px 10px;
+      border-top: 1px solid var(--line);
+      color: var(--text);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    td.num {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    td.sequence {
+      color: var(--brown-950);
+      font-weight: 700;
+    }
+
+    td.number {
+      color: var(--brown-800);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .seq-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    .seq-reset {
+      height: 38px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--brown-800);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .seq-reset:hover {
+      background: var(--accent-soft);
+      border-color: #d8c4b2;
+    }
+
+    @media (max-width: 560px) {
+      #sequenceView #sequence-calculator {
+        padding: 18px 10px 30px;
+      }
+
+      .hero h1 {
+        font-size: 24px;
+      }
+
+      .results {
+        grid-template-columns: 1fr;
+      }
+
+      .result-card .value {
+        font-size: 17px;
+      }
+
+      /* 모바일 화면에서 테이블이 잘리지 않도록 패딩과 최소 너비 조정 */
+      table {
+        min-width: 100%;
+      }
+
+      th, td {
+        padding: 8px 6px;
+        font-size: 11px;
+      }
+    }
+  
 </style><link rel="apple-touch-icon" href="./icon-192.png">
-</head><body><div id="app"><div id="top"><button class="btn mobile" id="scenes" title="씬">☰</button><span class="topSpacer"></span><button class="btn" id="minus">A−</button><button class="btn" id="plus">A＋</button><button class="btn" id="set">⚙</button><button class="btn" id="focus">⛶</button><button class="btn mobile" id="marks" title="마크">●</button></div><button id="focusExit" title="집중 읽기 종료">×</button><div class="work"><button class="edgeTab edgeLeft desktop" id="leftTab">›</button><aside class="side left" id="left"><div class="sideHead"><h3>SCENE</h3><button class="sideClose desktop" id="leftClose">‹</button></div><div id="sceneList"></div></aside><main id="wrap"><div class="empty" id="empty"><button class="btn" id="emptyOpen">HTML 열기</button></div><article id="reader" hidden></article></main><aside class="side right" id="right"><div class="sideHead"><h3>MARK</h3><button class="sideClose desktop" id="rightClose">›</button></div><button class="edgeTab edgeRight desktop" id="rightTab">‹</button><div class="filters" id="filters"></div><div id="review"></div></aside></div><div id="bottom"><input id="scrub" type="range" min="0" max="1000"><span id="pos">0%</span></div></div><div id="selbar"></div><div id="back"><div class="modal" id="modal"></div></div><input id="file" type="file" accept=".html,.htm" hidden><input id="json" type="file" accept=".json" hidden>
+</head><body><div id="app"><div id="top"><button class="btn mobile" id="scenes" title="씬">☰</button><button class="btn" id="seqOpen" title="시퀀스 계산기">S</button><span class="topSpacer"></span><button class="btn" id="minus">A−</button><button class="btn" id="plus">A＋</button><button class="btn" id="set">⚙</button><button class="btn" id="focus">⛶</button><button class="btn mobile" id="marks" title="마크">●</button></div><button id="focusExit" title="집중 읽기 종료">×</button><div class="work"><button class="edgeTab edgeLeft desktop" id="leftTab">›</button><aside class="side left" id="left"><div class="sideHead"><h3>SCENE</h3><button class="sideClose desktop" id="leftClose">‹</button></div><div id="sceneList"></div></aside><main id="wrap"><div class="empty" id="empty"><button class="btn" id="emptyOpen">HTML 열기</button></div><article id="reader" hidden></article></main><aside class="side right" id="right"><div class="sideHead"><h3>MARK</h3><button class="sideClose desktop" id="rightClose">›</button></div><button class="edgeTab edgeRight desktop" id="rightTab">‹</button><div class="filters" id="filters"></div><div id="review"></div></aside></div><div id="bottom"><input id="scrub" type="range" min="0" max="1000"><span id="pos">0%</span></div></div><section id="sequenceView"><div class="seqBackBar"><button class="seqBackBtn" id="seqBack" type="button">← 퇴고</button></div><main id="sequence-calculator">
+
+    <section class="hero">
+      <h1>시퀀스 계산기</h1>
+      
+    </section>
+
+    <section class="preset-section">
+      <div class="preset-header">
+        <span class="preset-title">규격 프리셋</span>
+      </div>
+      <div class="preset-chips" id="presetChips"></div>
+      <div class="preset-add-row">
+        <input id="presetNameInput" type="text" placeholder="프리셋 이름 (예: 드라마 표준)">
+        <button class="preset-add-btn" id="savePresetBtn" type="button">현재 값 저장</button>
+      </div>
+    </section>
+
+    <section class="input-card">
+      <div class="input-grid">
+
+        <div class="seq-field">
+          <label for="totalPages">전체 예상 페이지</label>
+          <input
+            id="totalPages"
+            type="number"
+            inputmode="decimal"
+            min="1"
+            step="1"
+            value="70"
+          >
+        </div>
+
+        <div class="seq-field">
+          <label for="minutesPerPage">페이지당 러닝타임</label>
+          <input
+            id="minutesPerPage"
+            type="number"
+            inputmode="decimal"
+            min="0.1"
+            step="0.1"
+            value="1.5"
+          >
+        </div>
+
+      </div>
+    </section>
+
+    <section class="results">
+
+      <div class="result-card main">
+        <div class="label">예상 러닝타임</div>
+        <div class="value">
+          <span id="totalRuntime">—</span> 분
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="label">구간당 분량</div>
+        <div class="value">
+          <span id="segmentPages">—</span> 페이지
+          <br>
+          <span id="segmentMinutes">—</span> 분
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="label">시퀀스 분량</div>
+        <div class="value">
+          <span id="sequencePages">—</span> 페이지
+          <br>
+          <span id="sequenceMinutes">—</span> 분
+        </div>
+      </div>
+
+    </section>
+
+    <section class="table-section">
+
+      <div class="section-head">
+        <h2>시퀀스 분량표</h2>
+        <p>누적 기준</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>번호</th>
+              <th>시퀀스</th>
+              <th>누적 페이지</th>
+              <th>누적 러닝타임</th>
+            </tr>
+          </thead>
+
+          <tbody id="sequenceBody"></tbody>
+        </table>
+      </div>
+
+      <div class="seq-actions">
+        <button class="seq-reset" id="reset" type="button">초기화</button>
+      </div>
+
+    </section>
+
+  </main></section><div id="selbar"></div><div id="back"><div class="modal" id="modal"></div></div><input id="file" type="file" accept=".html,.htm" hidden><input id="json" type="file" accept=".json" hidden>
 <script>
 const DB='revision-local-v1',VER=1,DV=1,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],uid=()=>crypto.randomUUID?crypto.randomUUID():'x'+Date.now()+Math.random();
 const H=[['minor','약수정','#f3df78'],['major','강수정','#e58f86'],['dialogue','대사','#8db8dc'],['add','추가','#b9a0d8'],['delete','삭제','#b9b9b5'],['check','확인','#9fc89b']].map(x=>({id:x[0],name:x[1],color:x[2]}));
@@ -97,4 +582,204 @@ async function loadHtml(f){let np=parse(await f.text(),f.name);if(p&&!confirm('�
 $('#emptyOpen').onclick=()=>$('#file').click();$('#set').onclick=settings;$('#minus').onclick=async()=>{cfg.size=Math.max(13,cfg.size-1);await saveCfg();render()};$('#plus').onclick=async()=>{cfg.size=Math.min(32,cfg.size+1);await saveCfg();render()};$('#focus').onclick=()=>document.body.classList.toggle('focus');$('#focusExit').onclick=()=>document.body.classList.remove('focus');document.addEventListener('keydown',e=>{if(e.key==='Escape')document.body.classList.remove('focus')});$('#scenes').onclick=()=>{if(matchMedia('(max-width:760px)').matches){$('#right').classList.remove('open');$('#left').classList.toggle('open')}else{document.body.classList.toggle('hideLeft')}};$('#marks').onclick=()=>{if(matchMedia('(max-width:760px)').matches){$('#left').classList.remove('open');$('#right').classList.toggle('open')}else{document.body.classList.toggle('hideRight')}};$('#leftClose').onclick=()=>document.body.classList.add('hideLeft');$('#leftTab').onclick=()=>document.body.classList.remove('hideLeft');$('#rightClose').onclick=()=>document.body.classList.add('hideRight');$('#rightTab').onclick=()=>document.body.classList.remove('hideRight');
 function position(){let w=$('#wrap'),d=Math.max(1,w.scrollHeight-w.clientHeight),r=w.scrollTop/d;$('#scrub').value=r*1000;$('#pos').textContent=Math.round(r*100)+'%'}$('#wrap').onscroll=()=>{position();if(p){p.scroll=$('#wrap').scrollTop;clearTimeout(window.sv);window.sv=setTimeout(save,350)}};$('#scrub').oninput=e=>{$('#wrap').scrollTop=(e.target.value/1000)*Math.max(0,$('#wrap').scrollHeight-$('#wrap').clientHeight)}
 (async()=>{db=await odb();cfg=await kv('settings')||{dataVersion:DV,highlighters:structuredClone(H),stamps:structuredClone(S),size:18,lh:1.85};p=await kv('project')||null;await saveCfg();render()})().catch(()=>alert('로컬 저장소를 열 수 없습니다.'));
+let sequenceReady=false;function openSequence(){document.body.classList.remove('focus');$$('.side').forEach(x=>x.classList.remove('open'));document.body.classList.add('sequenceMode');if(!sequenceReady){initSequenceCalculator();sequenceReady=true}window.scrollTo(0,0)}function closeSequence(){document.body.classList.remove('sequenceMode');requestAnimationFrame(()=>position())}$('#seqOpen').onclick=openSequence;$('#seqBack').onclick=closeSequence;function initSequenceCalculator(){
+const root = document.querySelector('#sequenceView #sequence-calculator');
+
+    const totalPages = root.querySelector('#totalPages');
+    const minutesPerPage = root.querySelector('#minutesPerPage');
+
+    const totalRuntime = root.querySelector('#totalRuntime');
+    const segmentPages = root.querySelector('#segmentPages');
+    const segmentMinutes = root.querySelector('#segmentMinutes');
+    const sequencePages = root.querySelector('#sequencePages');
+    const sequenceMinutes = root.querySelector('#sequenceMinutes');
+
+    const body = root.querySelector('#sequenceBody');
+    const reset = root.querySelector('#reset');
+
+    const presetChips = root.querySelector('#presetChips');
+    const presetNameInput = root.querySelector('#presetNameInput');
+    const savePresetBtn = root.querySelector('#savePresetBtn');
+
+    const DEFAULT_PRESETS = [
+      { name: "기본 규격 (70p / 1.5분)", pages: 70, perPage: 1.5 },
+      { name: "드라마 방식 (35p / 2분)", pages: 35, perPage: 2.0 },
+      { name: "영화 표준 (100p / 1분)", pages: 100, perPage: 1.0 }
+    ];
+
+    function getPresets() {
+      const saved = localStorage.getItem('seq_presets');
+      if (!saved) return DEFAULT_PRESETS;
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return DEFAULT_PRESETS;
+      }
+    }
+
+    function savePresets(presets) {
+      localStorage.setItem('seq_presets', JSON.stringify(presets));
+    }
+
+    function renderPresets() {
+      const presets = getPresets();
+      presetChips.innerHTML = presets.map((p, idx) => `
+        <button class="preset-chip" type="button" data-index="${idx}">
+          <span>${p.name} (${p.pages}p / ${p.perPage}분)</span>
+          ${presets.length > 1 ? `<span class="preset-del" data-del="${idx}">✕</span>` : ''}
+        </button>
+      `).join('');
+    }
+
+    presetChips.addEventListener('click', (e) => {
+      const delIdx = e.target.getAttribute('data-del');
+      if (delIdx !== null) {
+        e.stopPropagation();
+        let presets = getPresets();
+        presets.splice(Number(delIdx), 1);
+        savePresets(presets);
+        renderPresets();
+        return;
+      }
+
+      const chip = e.target.closest('.preset-chip');
+      if (chip) {
+        const idx = chip.getAttribute('data-index');
+        const presets = getPresets();
+        const p = presets[idx];
+        if (p) {
+          totalPages.value = p.pages;
+          minutesPerPage.value = p.perPage;
+          calculate();
+        }
+      }
+    });
+
+    savePresetBtn.addEventListener('click', () => {
+      const name = presetNameInput.value.trim();
+      const pages = Number.parseFloat(totalPages.value);
+      const perPage = Number.parseFloat(minutesPerPage.value);
+
+      if (!name) {
+        alert('프리셋 이름을 입력해주세요.');
+        presetNameInput.focus();
+        return;
+      }
+      if (!Number.isFinite(pages) || pages <= 0 || !Number.isFinite(perPage) || perPage <= 0) {
+        alert('올바른 페이지 및 러닝타임 값을 입력해주세요.');
+        return;
+      }
+
+      const presets = getPresets();
+      presets.push({ name, pages, perPage });
+      savePresets(presets);
+      presetNameInput.value = '';
+      renderPresets();
+    });
+
+    const labels = [
+      '1 시퀀스 - 전',
+      '1 시퀀스 - 후',
+      '2 시퀀스 - 전',
+      '2 시퀀스 - 후',
+      '3 시퀀스 - 전',
+      '3 시퀀스 - 후',
+      '4 시퀀스 - 전',
+      '4 시퀀스 - 후',
+      '5 시퀀스 - 전',
+      '5 시퀀스 - 후',
+      '6 시퀀스 - 전',
+      '6 시퀀스 - 후',
+      '7 시퀀스 - 전',
+      '7 시퀀스 - 중',
+      '7 시퀀스 - 후',
+      '8 시퀀스 - 쾅'
+    ];
+
+    const format = (value) => {
+      if (!Number.isFinite(value)) return '—';
+
+      const rounded =
+        Math.round((value + Number.EPSILON) * 10) / 10;
+
+      return Number.isInteger(rounded)
+        ? String(rounded)
+        : rounded.toFixed(1).replace(/0$/, '');
+    };
+
+    function calculate() {
+      const pages = Number.parseFloat(totalPages.value);
+      const perPage = Number.parseFloat(minutesPerPage.value);
+
+      if (
+        !Number.isFinite(pages) ||
+        pages <= 0 ||
+        !Number.isFinite(perPage) ||
+        perPage <= 0
+      ) {
+        totalRuntime.textContent = '—';
+        segmentPages.textContent = '—';
+        segmentMinutes.textContent = '—';
+        sequencePages.textContent = '—';
+        sequenceMinutes.textContent = '—';
+        body.innerHTML = '';
+        return;
+      }
+
+      const runtime = pages * perPage;
+
+      const eachPage = pages / 16;
+      const eachMinute = runtime / 16;
+
+      const eachSequencePage = eachPage * 2;
+      const eachSequenceMinute = eachMinute * 2;
+
+      totalRuntime.textContent = format(runtime);
+
+      segmentPages.textContent = format(eachPage);
+      segmentMinutes.textContent = format(eachMinute);
+
+      sequencePages.textContent = format(eachSequencePage);
+      sequenceMinutes.textContent = format(eachSequenceMinute);
+
+      body.innerHTML = labels.map((label, index) => {
+        const cumulativePage = eachPage * (index + 1);
+        const cumulativeMinute = eachMinute * (index + 1);
+
+        return (
+          '<tr>' +
+            '<td class="num">' +
+              String(index + 1).padStart(2, '0') +
+            '</td>' +
+            '<td class="sequence">' +
+              label +
+            '</td>' +
+            '<td class="number">' +
+              format(cumulativePage) +
+              ' 페이지' +
+            '</td>' +
+            '<td class="number">' +
+              format(cumulativeMinute) +
+              ' 분' +
+            '</td>' +
+          '</tr>'
+        );
+      }).join('');
+    }
+
+    totalPages.addEventListener('input', calculate);
+    minutesPerPage.addEventListener('input', calculate);
+
+    reset.addEventListener('click', () => {
+      totalPages.value = '70';
+      minutesPerPage.value = '1.5';
+
+      totalPages.focus();
+      calculate();
+    });
+
+    renderPresets();
+    calculate();
+  
+}
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});</script></body></html>
