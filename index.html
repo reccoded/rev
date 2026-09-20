@@ -7,10 +7,25 @@ body.a4 .dialogue{grid-template-columns:24mm minmax(0,1fr);gap:6mm;margin-bottom
 body.a4 .char{text-align:left;font-weight:700}body.focus #top,body.focus #bottom,body.focus .side{display:none!important}body.focus #app{grid-template-rows:1fr}body.focus .work{grid-template-columns:1fr}.mobile{display:none}#focusExit{display:none;position:fixed;z-index:120;top:max(8px,env(safe-area-inset-top));right:28px;width:42px;height:42px;border:1px solid #cfc7ba;border-radius:50%;background:rgba(248,245,238,.92);font-size:23px;line-height:1;padding:0;align-items:center;justify-content:center}body.focus #focusExit{display:flex}
 @media(max-width:900px){.desktop{display:none}.mobile{display:inline-flex;align-items:center;justify-content:center}#top{gap:4px;padding:5px 6px}#top .btn{white-space:nowrap;min-width:42px;padding:6px 8px}.topSpacer{min-width:2px}.work{display:block;position:relative;height:100%;min-height:0;overflow:hidden}#wrap{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}.side{display:none;position:absolute;z-index:50;top:0;bottom:0;width:min(88vw,360px);box-shadow:0 0 30px #0003}.side.open{display:block}.left{left:0}.right{right:0}#reader{padding:25px 18px 100px}.dialogue{grid-template-columns:78px minmax(0,1fr);gap:16px}#top{padding:6px}.btn{min-height:42px}}
 
+
+/* MARK review display */
+#review .reviewLabel{display:inline-block;font-weight:800;font-size:12px;line-height:1.35;padding:2px 6px;margin-bottom:4px;border-radius:4px}
+#review .reviewLabel.memoLabel{background:transparent!important;border-radius:0;padding:1px 0;border-bottom:2px solid #b73d3d}
+#review .reviewText{font-size:12px;color:var(--muted)}
+#review .item.singleMark{padding-top:8px;padding-bottom:8px}
+
 @media (min-width:761px){
   #leftClose,#leftTab,#rightClose,#rightTab{display:none!important}
   #scenes,#marks{display:inline-flex!important}
 }
+
+/* MARK 목록: 빠른 삭제 + 도장 그룹 */
+#review .item{position:relative;padding-right:42px}
+.reviewDelete{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:32px;height:32px;min-height:32px;padding:0;border:0;border-radius:8px;background:transparent;color:#9a9287;font-size:20px;line-height:32px;text-align:center;opacity:.58;z-index:2}
+.reviewDelete:hover{background:#ddd5c8;color:#923c36;opacity:1}
+.stampGroup{margin:14px 0 5px;padding:0 9px 5px;border-bottom:1px solid var(--line);font-size:12px;font-weight:850;letter-spacing:.04em}
+.stampGroup:first-child{margin-top:10px}
+@media(max-width:900px){.reviewDelete{width:36px;height:36px;min-height:36px;line-height:36px;opacity:.72}#review .item{padding-right:46px}}
 </style><link rel="apple-touch-icon" href="./icon-192.png">
 </head><body><div id="app"><div id="top"><button class="btn mobile" id="scenes" title="씬">☰</button><span class="topSpacer"></span><button class="btn" id="minus">A−</button><button class="btn" id="plus">A＋</button><button class="btn" id="set">⚙</button><button class="btn" id="focus">⛶</button><button class="btn mobile" id="marks" title="마크">●</button></div><button id="focusExit" title="집중 읽기 종료">×</button><div class="work"><button class="edgeTab edgeLeft desktop" id="leftTab">›</button><aside class="side left" id="left"><div class="sideHead"><h3>SCENE</h3><button class="sideClose desktop" id="leftClose">‹</button></div><div id="sceneList"></div></aside><main id="wrap"><div class="empty" id="empty"><button class="btn" id="emptyOpen">HTML 열기</button></div><article id="reader" hidden></article></main><aside class="side right" id="right"><div class="sideHead"><h3>MARK</h3><button class="sideClose desktop" id="rightClose">›</button></div><button class="edgeTab edgeRight desktop" id="rightTab">‹</button><div class="filters" id="filters"></div><div id="review"></div></aside></div><div id="bottom"><input id="scrub" type="range" min="0" max="1000"><span id="pos">0%</span></div></div><div id="selbar"></div><div id="back"><div class="modal" id="modal"></div></div><input id="file" type="file" accept=".html,.htm" hidden><input id="json" type="file" accept=".json" hidden>
 <script>
@@ -26,7 +41,42 @@ function render(){document.documentElement.style.setProperty('--size',cfg.size+'
 function textRender(e,b){let ms=p.annotations.filter(x=>x.blockId===b.id&&x.end>x.start).sort((a,z)=>a.start-z.start),pts=[0,b.text.length];ms.forEach(x=>pts.push(x.start,x.end));pts=[...new Set(pts)].sort((a,z)=>a-z);for(let i=0;i<pts.length-1;i++){let a=pts[i],z=pts[i+1],t=b.text.slice(a,z),act=ms.filter(x=>x.start<=a&&x.end>=z).at(-1);if(!act)e.append(document.createTextNode(t));else{let w=document.createElement(act.kind==='hl'?'mark':'span');if(act.kind==='memo')w.className='memo';else w.style.background=cfg.highlighters.find(x=>x.id===act.preset)?.color||'#eee';w.textContent=t;w.onclick=ev=>{ev.stopPropagation();editMark(act.id)};e.append(w)}}ms.filter(x=>x.kind==='memo').forEach(m=>{let d=document.createElement('span');d.className='dot';d.textContent='•';d.onclick=()=>editMark(m.id);e.append(d)})}
 function nav(){$('#sceneList').innerHTML=p.blocks.filter(x=>x.type==='scene').map(b=>{let s=cfg.stamps.find(x=>x.id===p.stamps[b.id]);return`<button class="item" data-go="${b.id}">${esc(b.text)} ${s?'['+esc(s.name)+']':''}</button>`}).join('');$$('[data-go]').forEach(x=>x.onclick=()=>go(x.dataset.go))}
 function filters(){let a=[['all','전체'],...cfg.highlighters.map(x=>['h:'+x.id,x.name]),['memo','메모'],['stamp','도장']];$('#filters').innerHTML=a.map(x=>`<button class="btn ${filter===x[0]?'on':''}" data-f="${x[0]}">${esc(x[1])}</button>`).join('');$$('[data-f]').forEach(x=>x.onclick=()=>{filter=x.dataset.f;filters();review()})}
-function review(){let a=[];p.annotations.forEach(m=>{if(filter==='all'||filter==='memo'&&m.kind==='memo'||filter==='h:'+m.preset){let b=p.blocks.find(x=>x.id===m.blockId);if(b)a.push([b.id,m.kind==='memo'?'메모':cfg.highlighters.find(x=>x.id===m.preset)?.name,m.note||b.text.slice(m.start,m.end)])}});if(filter==='all'||filter==='stamp')Object.entries(p.stamps).forEach(([id,sid])=>{let b=p.blocks.find(x=>x.id===id),s=cfg.stamps.find(x=>x.id===sid);if(b&&s)a.push([id,s.name,b.text])});$('#review').innerHTML=a.map(x=>`<button class="item" data-r="${x[0]}"><b>${esc(x[1]||'')}</b><div class="small">${esc((x[2]||'').slice(0,100))}</div></button>`).join('');$$('[data-r]').forEach(x=>x.onclick=()=>go(x.dataset.r))}
+function review(){
+  let a=[];
+  p.annotations.forEach(m=>{
+    if(filter==='all'||filter==='memo'&&m.kind==='memo'||filter==='h:'+m.preset){
+      let b=p.blocks.find(x=>x.id===m.blockId);
+      if(b){
+        let h=m.kind==='memo'?null:cfg.highlighters.find(x=>x.id===m.preset);
+        a.push({id:b.id,markId:m.id,type:m.kind==='memo'?'memo':'hl',name:m.kind==='memo'?'메모':h?.name||'',color:h?.color||'',text:m.note||b.text.slice(m.start,m.end)});
+      }
+    }
+  });
+  let all=filter==='all';
+  if(filter==='stamp'){
+    let order=new Map(p.blocks.map((b,i)=>[b.id,i])),html='';
+    cfg.stamps.forEach(st=>{
+      let rows=Object.entries(p.stamps)
+        .filter(([,sid])=>sid===st.id)
+        .map(([id])=>p.blocks.find(b=>b.id===id))
+        .filter(Boolean)
+        .sort((x,y)=>(order.get(x.id)||0)-(order.get(y.id)||0));
+      if(!rows.length)return;
+      html+=`<div class="stampGroup" style="color:${st.color}">${esc(st.name)}</div>`;
+      html+=rows.map(b=>`<button class="item singleMark" data-r="${b.id}"><div class="reviewText">${esc((b.text||'').slice(0,100))}</div><span class="reviewDelete" data-del-stamp="${b.id}" title="도장 삭제" aria-label="도장 삭제">×</span></button>`).join('');
+    });
+    $('#review').innerHTML=html;
+  }else{
+    $('#review').innerHTML=a.map(x=>{
+      let label='';
+      if(all)label=x.type==='memo'?`<span class="reviewLabel memoLabel">메모</span>`:`<span class="reviewLabel" style="background:${x.color}">${esc(x.name)}</span>`;
+      return`<button class="item ${all?'':'singleMark'}" data-r="${x.id}">${label}<div class="reviewText">${esc((x.text||'').slice(0,100))}</div><span class="reviewDelete" data-del-mark="${x.markId}" title="마크 삭제" aria-label="마크 삭제">×</span></button>`;
+    }).join('');
+  }
+  $$('[data-r]').forEach(x=>x.onclick=()=>go(x.dataset.r));
+  $$('[data-del-mark]').forEach(x=>x.onclick=async ev=>{ev.stopPropagation();let id=x.dataset.delMark;p.annotations=p.annotations.filter(m=>m.id!==id);await save();render()});
+  $$('[data-del-stamp]').forEach(x=>x.onclick=async ev=>{ev.stopPropagation();delete p.stamps[x.dataset.delStamp];await save();render()});
+}
 function esc(s=''){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function go(id){document.querySelector(`[data-bid="${CSS.escape(id)}"]`)?.scrollIntoView({behavior:'smooth',block:'center'});$$('.side').forEach(x=>x.classList.remove('open'))}
 function offset(b,node,o){let root=document.querySelector(`[data-bid="${b.id}"]`),w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n,total=0;while(n=w.nextNode()){if(n===node)return total+o;total+=(n.textContent||'').length}return null}
 document.addEventListener('selectionchange',()=>{clearTimeout(window.st);window.st=setTimeout(()=>{let s=getSelection();if(!s||s.isCollapsed||!p){$('#selbar').style.display='none';return}let a=s.anchorNode?.parentElement?.closest('[data-bid]'),f=s.focusNode?.parentElement?.closest('[data-bid]');if(!a||!f||a!==f)return;let b=p.blocks.find(x=>x.id===a.dataset.bid);if(!b||b.type==='scene')return;let x=offset(b,s.anchorNode,s.anchorOffset),y=offset(b,s.focusNode,s.focusOffset);if(x>y)[x,y]=[y,x];selInfo={blockId:b.id,start:x,end:y};let bar=$('#selbar');bar.innerHTML=cfg.highlighters.map(h=>`<button class="colorbtn" style="background:${h.color}" data-h="${h.id}">${esc(h.name)}</button>`).join('')+'<button class="btn" id="memoAdd">메모</button>';bar.style.display='flex';$$('[data-h]').forEach(q=>q.onclick=async()=>{p.annotations.push({id:uid(),kind:'hl',preset:q.dataset.h,...selInfo,note:''});s.removeAllRanges();bar.style.display='none';await save();render()});$('#memoAdd').onclick=()=>memoNew()},100)});
