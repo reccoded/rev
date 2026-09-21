@@ -427,15 +427,18 @@ body.a4 .char{text-align:left;font-weight:700}body.focus #top,body.focus #bottom
 .navIcon{background:#dbe7e5!important;border-color:#9db5b1!important;color:#244f4b!important;box-shadow:inset 0 0 0 1px #ffffff66}
 .navIcon:hover{background:#c8ddda!important;border-color:#6f9993!important;color:#173f3b!important}
 .navIcon.active{background:#397a73!important;border-color:#397a73!important;color:#fff!important;box-shadow:0 2px 7px #2d625d2e}
-.writerFormat .btn.modeActive{background:#d3dfdc;border-color:#6f9993;color:#214c47;box-shadow:inset 0 0 0 1px #ffffff70}
+.writerFormat .btn.modeActive{background:#dde1ea;border-color:#8e98ad;color:#3f485f;box-shadow:inset 0 0 0 1px #ffffff80}
 .writerStatus{display:none}.writerStatus.show{display:block;position:fixed;right:14px;bottom:18px;z-index:150;padding:7px 10px;border:1px solid #bdbab4;border-radius:999px;background:rgba(246,245,242,.96);box-shadow:0 4px 16px #0002;color:#5f5c56;font-size:11px;pointer-events:none}
 .writerMenuWrap{position:relative;display:flex}.writerMore{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:100;min-width:132px;padding:6px;background:#f4f3f0;border:1px solid #c8c5bf;border-radius:11px;box-shadow:0 10px 28px #0002}.writerMore.open{display:grid;gap:4px}.writerMore .btn{width:100%;text-align:left;white-space:nowrap}.writerMore .danger{color:#8d3d38}
 #writerGear{display:inline-flex;align-items:center;justify-content:center}
+#writerSave{position:relative}
+#writerSave.saveConfirmed::after{content:"";position:absolute;right:4px;top:4px;width:8px;height:8px;border-radius:50%;background:#2f7770;box-shadow:0 0 0 2px #f4f3f0;animation:saveDotPop 1.5s ease both}
+@keyframes saveDotPop{0%{opacity:0;transform:scale(.35)}18%{opacity:1;transform:scale(1.25)}32%{transform:scale(1)}78%{opacity:1}100%{opacity:0;transform:scale(.85)}}
 @media(max-width:900px){
-  #top{display:flex!important;align-items:center;gap:3px;overflow:hidden;white-space:nowrap}
+  #top{display:flex!important;position:relative;align-items:center;gap:3px;overflow:hidden;white-space:nowrap}
   #top .workspaceNav{display:flex;flex:0 0 auto;gap:3px}
-  #top .topCenter{display:flex;flex:1 1 auto;justify-content:center;gap:3px;min-width:0}
-  #top .topRight{display:flex;flex:0 0 auto;gap:3px}
+  #top .topCenter{display:flex;position:absolute;left:50%;transform:translateX(-50%);justify-content:center;gap:3px;min-width:0}
+  #top .topRight{display:flex;flex:0 0 auto;gap:3px;margin-left:auto}
   #top .navIcon,#top .btn{min-width:34px;width:auto;height:40px;min-height:40px;padding:5px 6px}
   #top .navIcon{width:36px;min-width:36px}
   #scenes,#marks{display:inline-flex!important;align-items:center;justify-content:center}
@@ -831,25 +834,27 @@ const root = document.querySelector('#sequenceView #sequence-calculator');
 
 
 const WRITER_KEY='writer-draft-v1',WRITER_CFG='writer-cfg-v1';let writerLoaded=false,writerSavedHTML='',writerSize=11;
-async function loadWriterDraft(){if(writerLoaded)return;let d=await kv(WRITER_KEY)||{html:'',savedAt:null};let wc=await kv(WRITER_CFG)||{size:11};writerSavedHTML=d.html||'';writerSize=wc.size||11;$('#writerPaper').innerHTML=writerSavedHTML;applyWriterSize();writerLoaded=true;applyWriterMode('action');writerStatus(d.savedAt?'저장됨':'저장 전')}
+async function loadWriterDraft(){if(writerLoaded)return;let d=await kv(WRITER_KEY)||{html:'',savedAt:null};let wc=await kv(WRITER_CFG)||{size:11};writerSavedHTML=d.html||'';writerSize=wc.size||11;$('#writerPaper').innerHTML=writerSavedHTML;applyWriterSize();writerLoaded=true;applyWriterMode('action');setWriterDirty(false)}
 let writerMode='action',writerStatusTimer=null;
 function writerStatus(t,persist=false){let el=$('#writerStatus');el.textContent=t;el.classList.add('show');clearTimeout(writerStatusTimer);if(!persist)writerStatusTimer=setTimeout(()=>el.classList.remove('show'),1400)}
+function setWriterDirty(dirty){}
+function flashWriterSaved(){let b=$('#writerSave');if(!b)return;b.classList.remove('saveConfirmed');void b.offsetWidth;b.classList.add('saveConfirmed');setTimeout(()=>b.classList.remove('saveConfirmed'),1550)}
 function applyWriterSize(){$('#writerPaper').style.fontSize=writerSize+'pt'}
 function insertWriterText(text){let ed=$('#writerPaper');ed.focus();let sel=getSelection();if(!sel.rangeCount||!ed.contains(sel.anchorNode)){ed.append(document.createTextNode(text));return}let r=sel.getRangeAt(0);r.deleteContents();let n=document.createTextNode(text);r.insertNode(n);r.setStartAfter(n);r.collapse(true);sel.removeAllRanges();sel.addRange(r)}
 function applyWriterMode(mode){writerMode=mode;let ed=$('#writerPaper');ed.focus();let wantBold=mode==='dialogue'||mode==='scene';let isBold=document.queryCommandState('bold');if(isBold!==wantBold)document.execCommand('bold',false,null);$('#writerDialogue').classList.toggle('modeActive',mode==='dialogue');$('#writerAction').classList.toggle('modeActive',mode==='action');$('#writerScene').classList.toggle('modeActive',mode==='scene')}
-$('#writerPaper').addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();insertWriterText('\t');writerStatus('수정됨',true)}});
-$('#writerPaper').addEventListener('input',()=>writerStatus('수정됨',true));
+$('#writerPaper').addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();insertWriterText('\t');setWriterDirty(true)}});
+$('#writerPaper').addEventListener('input',()=>setWriterDirty(true));
 $('#writerPaper').addEventListener('focus',()=>{if(writerMode==='dialogue'||writerMode==='action')requestAnimationFrame(()=>applyWriterMode(writerMode))});
-$('#writerScene').onclick=()=>{applyWriterMode('scene');insertWriterText('#<$N>. ');writerStatus('수정됨',true)};
+$('#writerScene').onclick=()=>{applyWriterMode('scene');insertWriterText('#<$N>. ');setWriterDirty(true)};
 $('#writerDialogue').onclick=()=>applyWriterMode('dialogue');
 $('#writerAction').onclick=()=>applyWriterMode('action');
 $('#writerMinus').onclick=async()=>{writerSize=Math.max(8,writerSize-1);applyWriterSize();await kv(WRITER_CFG,{size:writerSize})};
 $('#writerPlus').onclick=async()=>{writerSize=Math.min(24,writerSize+1);applyWriterSize();await kv(WRITER_CFG,{size:writerSize})};
-$('#writerSave').onclick=async()=>{writerSavedHTML=$('#writerPaper').innerHTML;let at=new Date();await kv(WRITER_KEY,{html:writerSavedHTML,savedAt:at.toISOString()});writerStatus('저장됨');};
-function writerRestore(){if($('#writerPaper').innerHTML===writerSavedHTML){writerStatus('저장본과 같음');return}if(confirm('마지막 저장 상태로 복구할까요?')){$('#writerPaper').innerHTML=writerSavedHTML;applyWriterMode('action');writerStatus('복구됨')}}
-function writerClear(){if(!confirm('현재 원고를 비울까요?'))return;$('#writerPaper').innerHTML='';applyWriterMode('action');writerStatus('수정됨',true);$('#writerPaper').focus()}
+$('#writerSave').onclick=async()=>{let html=$('#writerPaper').innerHTML;let at=new Date();await kv(WRITER_KEY,{html,savedAt:at.toISOString()});writerSavedHTML=html;flashWriterSaved();};
+function writerRestore(){if($('#writerPaper').innerHTML===writerSavedHTML){setWriterDirty(false);return}if(confirm('마지막 저장 상태로 복구할까요?')){$('#writerPaper').innerHTML=writerSavedHTML;applyWriterMode('action');setWriterDirty(false)}}
+function writerClear(){if(!confirm('현재 원고를 비울까요?'))return;$('#writerPaper').innerHTML='';applyWriterMode('action');setWriterDirty(true);$('#writerPaper').focus()}
 function writerPlainText(){let ed=$('#writerPaper');let t=ed.innerText.replace(/\u00a0/g,' ');return t.replace(/\r\n?/g,'\n')}
-function writerTxt(){let text=writerPlainText();let u=URL.createObjectURL(new Blob(['\ufeff'+text],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download='DRAFT_'+new Date().toISOString().slice(0,10)+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),500);writerStatus('TXT 저장됨')}
+function writerTxt(){let text=writerPlainText();let u=URL.createObjectURL(new Blob(['\ufeff'+text],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download='DRAFT_'+new Date().toISOString().slice(0,10)+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),500)}
 $('#writerGear').onclick=e=>{e.stopPropagation();$('#writerMore').classList.toggle('open')};
 $('#writerMore').onclick=e=>{let b=e.target.closest('[data-writer-action]');if(!b)return;$('#writerMore').classList.remove('open');if(b.dataset.writerAction==='restore')writerRestore();else if(b.dataset.writerAction==='txt')writerTxt();else if(b.dataset.writerAction==='clear')writerClear()};
 document.addEventListener('click',e=>{if(!e.target.closest('.writerMenuWrap'))$('#writerMore')?.classList.remove('open')});
