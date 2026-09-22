@@ -952,7 +952,7 @@ $('#writerMinus').onclick=async()=>{writerSize=Math.max(8,writerSize-1);applyWri
 $('#writerPlus').onclick=async()=>{writerSize=Math.min(24,writerSize+1);applyWriterSize();await kv(WRITER_CFG,{size:writerSize})};
 $('#writerSave').onclick=async()=>{let html=$('#writerPaper').innerHTML;let at=new Date();await kv(WRITER_KEY,{html,savedAt:at.toISOString()});writerSavedHTML=html;setWriterDirty(false);};
 function writerRestore(){if($('#writerPaper').innerHTML===writerSavedHTML){setWriterDirty(false);return}if(confirm('마지막 저장 상태로 복구할까요?')){$('#writerPaper').innerHTML=writerSavedHTML;applyWriterMode('action');setWriterDirty(false)}}
-function writerClear(){if(!confirm('현재 원고를 비울까요?'))return;$('#writerPaper').innerHTML='';applyWriterMode('action');setWriterDirty(true);$('#writerPaper').focus()}
+async function writerClear(){if(!confirm('현재 작성 원고와 저장된 복구본까지 모두 삭제할까요?'))return;if(!confirm('삭제한 작성 원고는 이 앱에서 복구할 수 없습니다. 삭제할까요?'))return;await kv(WRITER_KEY,undefined,true);$('#writerPaper').innerHTML='';writerSavedHTML='';writerLoaded=true;applyWriterMode('action');setWriterDirty(false);writerStatus('원고 삭제됨');$('#writerPaper').focus()}
 function writerPlainText(){let ed=$('#writerPaper');let t=ed.innerText.replace(/\u00a0/g,' ');return t.replace(/\r\n?/g,'\n')}
 function writerTxt(){let text=writerPlainText();let u=URL.createObjectURL(new Blob(['\ufeff'+text],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download='DRAFT_'+new Date().toISOString().slice(0,10)+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),500)}
 $('#writerGear').onclick=e=>{e.stopPropagation();$('#writerMore').classList.toggle('open')};
