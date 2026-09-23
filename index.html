@@ -562,22 +562,53 @@ body.a4 .char{text-align:left;font-weight:700}body.focus #top,body.focus #bottom
 }
 </style>
 
-</head><body><div id="app"><div id="top"><div class="workspaceNav"><button class="btn navIcon" id="writerOpen" title="작성" aria-label="작성"><svg viewBox="0 0 24 24"><path d="M4 20l4.2-1 10.6-10.6-3.2-3.2L5 15.8 4 20zM14.8 6l3.2 3.2"/></svg></button><button class="btn navIcon active" id="reviewOpen" title="퇴고" aria-label="퇴고"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button><button class="btn navIcon" id="seqOpen" title="시퀀스 계산기">S</button></div><div class="topCenter"><button class="btn desktopEdgeControl" id="scenes" title="씬 목록">☰</button><button class="btn" id="minus">A−</button><button class="btn" id="plus">A＋</button><button class="btn desktopEdgeControl" id="marks" title="마크"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h12v16l-6-4-6 4V4z"/></svg></button></div><div class="topRight"><button class="btn" id="set">⚙</button></div></div><button class="mobilePanelBar" id="sceneMobileEdge" title="씬 목록">☰</button><button class="mobilePanelBar" id="markMobileEdge" title="마크"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h12v16l-6-4-6 4V4z"/></svg></button><button id="focusExit" title="집중 읽기 종료">×</button><div class="work"><button class="edgeTab edgeLeft desktop" id="leftTab">›</button><aside class="side left" id="left"><div class="sideHead"><h3>SCENE</h3><button class="sideClose desktop" id="leftClose">‹</button></div><div id="sceneList"></div></aside><main id="wrap"><div class="empty" id="empty"><button class="btn" id="emptyOpen">HTML 열기</button></div><article id="reader" hidden></article></main><aside class="side right" id="right"><div class="sideHead"><h3>MARK</h3><button class="sideClose desktop" id="rightClose">›</button></div><button class="edgeTab edgeRight desktop" id="rightTab">‹</button><div class="filters" id="filters"></div><div id="review"></div></aside></div><div id="bottom"><input id="scrub" type="range" min="0" max="1000"><span id="pos">0%</span></div></div><section id="sequenceView"><div class="toolViewTop"><div class="workspaceNav"><button class="btn navIcon" data-view="writer" title="작성"><svg viewBox="0 0 24 24"><path d="M4 20l4.2-1 10.6-10.6-3.2-3.2L5 15.8 4 20zM14.8 6l3.2 3.2"/></svg></button><button class="btn navIcon" data-view="review" title="퇴고"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button><button class="btn navIcon active" data-view="sequence" title="시퀀스 계산기">S</button></div></div><main id="sequence-calculator">
+<style id="seq-pc-final">
+.seqGear{min-width:42px;display:inline-flex;align-items:center;justify-content:center}
+.seqSettingsGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 12px}.seqSettingsGrid input{width:100%;height:40px;padding:0 10px;border:1px solid var(--line);border-radius:9px;background:#fff}.seqSettingsPresets{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}.seqSettingsAdd{display:grid;grid-template-columns:1fr auto;gap:7px}.seqSettingsAdd input{min-width:0;height:38px;padding:0 10px;border:1px solid var(--line);border-radius:9px;background:#fff}
+@media(min-width:901px){
+  #sequenceView #sequence-calculator{
+    position:relative;width:min(96vw,1120px);padding:10px 220px 18px;margin:0 auto
+  }
+  /* 표를 메인 최상단으로 */
+  #sequenceView .table-section{
+    width:100%;margin:0 auto;padding:0;clear:none
+  }
+  #sequenceView .table-wrap{border-radius:12px}
+  #sequenceView table{table-layout:fixed}
+  #sequenceView th,#sequenceView td{padding:7px 8px;line-height:1.22}
+  #sequenceView th:nth-child(1),#sequenceView td:nth-child(1){width:62px;text-align:center}
+  #sequenceView th:nth-child(2),#sequenceView td:nth-child(2){text-align:left}
+  #sequenceView th:nth-child(3),#sequenceView td:nth-child(3){width:170px;text-align:center}
+  #sequenceView th:nth-child(4),#sequenceView td:nth-child(4){width:185px;text-align:center}
+  #sequenceView .seq-actions{margin-top:6px}
+  #sequenceView .seq-reset{height:32px}
+
+  /* 좌측: 입력 2개 + 예상 러닝타임 */
+  #sequenceView .input-card{
+    position:absolute;left:12px;top:10px;width:190px;min-height:0;margin:0;padding:10px 11px;display:block;float:none
+  }
+  #sequenceView .input-card .input-grid{display:grid;grid-template-columns:1fr;gap:7px}
+  #sequenceView .input-card .seq-field{gap:3px}
+  #sequenceView .input-card .seq-field input{height:34px;padding:0 9px;font-size:14px}
+
+  /* 결과 3개를 좌 1 / 우 2로 분산 */
+  #sequenceView .results{display:contents}
+  #sequenceView .result-card{position:absolute;width:190px;min-width:0;margin:0;padding:9px 10px;min-height:72px}
+  #sequenceView .result-card.main{left:12px;top:160px;background:#55534f;border-color:#55534f}
+  #sequenceView .result-card:nth-child(2){right:12px;top:10px}
+  #sequenceView .result-card:nth-child(3){right:12px;top:92px}
+  #sequenceView .result-card .value{margin-top:3px;font-size:15px}
+  #sequenceView .result-card:not(.main) .value{
+    display:flex;align-items:baseline;justify-content:flex-start;gap:14px;flex-wrap:nowrap;white-space:nowrap;font-size:14px
+  }
+  #sequenceView .result-card:not(.main) .value br{display:none}
+}
+</style>
+</head><body><div id="app"><div id="top"><div class="workspaceNav"><button class="btn navIcon" id="writerOpen" title="작성" aria-label="작성"><svg viewBox="0 0 24 24"><path d="M4 20l4.2-1 10.6-10.6-3.2-3.2L5 15.8 4 20zM14.8 6l3.2 3.2"/></svg></button><button class="btn navIcon active" id="reviewOpen" title="퇴고" aria-label="퇴고"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button><button class="btn navIcon" id="seqOpen" title="시퀀스 계산기">S</button></div><div class="topCenter"><button class="btn desktopEdgeControl" id="scenes" title="씬 목록">☰</button><button class="btn" id="minus">A−</button><button class="btn" id="plus">A＋</button><button class="btn desktopEdgeControl" id="marks" title="마크"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h12v16l-6-4-6 4V4z"/></svg></button></div><div class="topRight"><button class="btn" id="set">⚙</button></div></div><button class="mobilePanelBar" id="sceneMobileEdge" title="씬 목록">☰</button><button class="mobilePanelBar" id="markMobileEdge" title="마크"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h12v16l-6-4-6 4V4z"/></svg></button><button id="focusExit" title="집중 읽기 종료">×</button><div class="work"><button class="edgeTab edgeLeft desktop" id="leftTab">›</button><aside class="side left" id="left"><div class="sideHead"><h3>SCENE</h3><button class="sideClose desktop" id="leftClose">‹</button></div><div id="sceneList"></div></aside><main id="wrap"><div class="empty" id="empty"><button class="btn" id="emptyOpen">HTML 열기</button></div><article id="reader" hidden></article></main><aside class="side right" id="right"><div class="sideHead"><h3>MARK</h3><button class="sideClose desktop" id="rightClose">›</button></div><button class="edgeTab edgeRight desktop" id="rightTab">‹</button><div class="filters" id="filters"></div><div id="review"></div></aside></div><div id="bottom"><input id="scrub" type="range" min="0" max="1000"><span id="pos">0%</span></div></div><section id="sequenceView"><div class="toolViewTop"><div class="workspaceNav"><button class="btn navIcon" data-view="writer" title="작성"><svg viewBox="0 0 24 24"><path d="M4 20l4.2-1 10.6-10.6-3.2-3.2L5 15.8 4 20zM14.8 6l3.2 3.2"/></svg></button><button class="btn navIcon" data-view="review" title="퇴고"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button><button class="btn navIcon active" data-view="sequence" title="시퀀스 계산기">S</button></div><div class="topSpacer"></div><button class="btn seqGear" id="seqGear" title="시퀀스 설정">⚙</button></div><main id="sequence-calculator">
 
     <section class="hero">
       <h1>시퀀스 계산기</h1>
       
-    </section>
-
-    <section class="preset-section">
-      <div class="preset-header">
-        <span class="preset-title">규격 프리셋</span>
-      </div>
-      <div class="preset-chips" id="presetChips"></div>
-      <div class="preset-add-row">
-        <input id="presetNameInput" type="text" placeholder="프리셋 이름 (예: 드라마 표준)">
-        <button class="preset-add-btn" id="savePresetBtn" type="button">현재 값 저장</button>
-      </div>
     </section>
 
     <section class="input-card">
@@ -723,7 +754,7 @@ function settings(){modal(`<h2>설정</h2><div class="small">형광펜</div><div
 function presetDraw(){$('#hs').innerHTML=cfg.highlighters.map((h,i)=>`<div class="preset"><input type="color" value="${h.color}" data-hc="${i}"><input type="text" value="${esc(h.name)}" data-hn="${i}"><button class="btn" data-hd="${i}">×</button></div>`).join('');$('#ss').innerHTML=cfg.stamps.map((s,i)=>`<div class="preset"><input type="color" value="${s.color}" data-sc="${i}"><input type="text" value="${esc(s.name)}" data-sn="${i}"><button class="btn" data-sd="${i}">×</button></div>`).join('');$$('[data-hc]').forEach(x=>x.oninput=()=>cfg.highlighters[+x.dataset.hc].color=x.value);$$('[data-hn]').forEach(x=>x.oninput=()=>cfg.highlighters[+x.dataset.hn].name=x.value);$$('[data-sc]').forEach(x=>x.oninput=()=>cfg.stamps[+x.dataset.sc].color=x.value);$$('[data-sn]').forEach(x=>x.oninput=()=>cfg.stamps[+x.dataset.sn].name=x.value);$$('[data-hd]').forEach(x=>x.onclick=()=>{if(cfg.highlighters.length>1){cfg.highlighters.splice(+x.dataset.hd,1);presetDraw()}});$$('[data-sd]').forEach(x=>x.onclick=()=>{if(cfg.stamps.length>1){cfg.stamps.splice(+x.dataset.sd,1);presetDraw()}})}
 
 function docSignature(){if(!p)return null;let t=p.blocks.map(b=>[b.type,b.character||'',b.text].join('|')).join('\n');let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16)}
-function exportReview(){if(!p)return;down({app:'revision-review',dataVersion:DV,sourceName:p.name,documentSignature:docSignature(),annotations:p.annotations,stamps:p.stamps},(p.name||'원고')+'-퇴고.json')}
+function exportReview(){if(!p)return;down({app:'revision-review',dataVersion:DV,sourceName:p.name,documentSignature:docSignature(),annotations:p.annotations,stamps:p.stamps},'퇴고_'+new Date().toLocaleDateString('en-CA')+'.json')}
 async function importReview(j){if(!p){alert('먼저 원본 HTML을 열어 주세요.');return}if(!Array.isArray(j.annotations)||!j.stamps){alert('퇴고 JSON 형식이 아닙니다.');return}if(j.documentSignature&&j.documentSignature!==docSignature()&&!confirm('현재 HTML과 다른 원고에서 만든 퇴고 JSON일 수 있습니다. 그래도 불러올까요?'))return;p.annotations=j.annotations;p.stamps=j.stamps;await save();render()}
 
 function down(o,n){let u=URL.createObjectURL(new Blob([JSON.stringify(o,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(u),500)}
@@ -747,9 +778,7 @@ const root = document.querySelector('#sequenceView #sequence-calculator');
     const body = root.querySelector('#sequenceBody');
     const reset = root.querySelector('#reset');
 
-    const presetChips = root.querySelector('#presetChips');
-    const presetNameInput = root.querySelector('#presetNameInput');
-    const savePresetBtn = root.querySelector('#savePresetBtn');
+    const seqGear = document.querySelector('#seqGear');
 
     const DEFAULT_PRESETS = [
       { name: "기본 규격 (70p / 1.5분)", pages: 70, perPage: 1.5 },
@@ -771,61 +800,14 @@ const root = document.querySelector('#sequenceView #sequence-calculator');
       localStorage.setItem('seq_presets', JSON.stringify(presets));
     }
 
-    function renderPresets() {
-      const presets = getPresets();
-      presetChips.innerHTML = presets.map((p, idx) => `
-        <button class="preset-chip" type="button" data-index="${idx}">
-          <span>${p.name} (${p.pages}p / ${p.perPage}분)</span>
-          ${presets.length > 1 ? `<span class="preset-del" data-del="${idx}">✕</span>` : ''}
-        </button>
-      `).join('');
+    function sequenceSettings(){
+      const presets=getPresets();
+      modal(`<h2>시퀀스 설정</h2><div class="small">규격 프리셋</div><div class="seqSettingsPresets">${presets.map((p,i)=>`<button class="preset-chip" type="button" data-seq-preset="${i}"><span>${esc(p.name)} (${p.pages}p / ${p.perPage}분)</span>${presets.length>1?`<span class="preset-del" data-seq-del="${i}">✕</span>`:''}</button>`).join('')}</div><div class="sep"></div><div class="seqSettingsGrid"><div class="seq-field"><label>예상 페이지</label><input id="seqPresetPages" type="number" min="1" step="1" value="${esc(String(totalPages.value))}"></div><div class="seq-field"><label>페이지당 러닝타임</label><input id="seqPresetPerPage" type="number" min="0.1" step="0.1" value="${esc(String(minutesPerPage.value))}"></div></div><div class="seqSettingsAdd"><input id="seqPresetName" type="text" placeholder="프리셋 이름"><button class="btn" id="seqPresetSave">프리셋 저장</button></div><div class="row end"><button class="btn" data-close>닫기</button></div>`);
+      $$('[data-seq-preset]').forEach(x=>x.onclick=e=>{if(e.target.closest('[data-seq-del]'))return;let p=getPresets()[+x.dataset.seqPreset];if(p){totalPages.value=p.pages;minutesPerPage.value=p.perPage;calculate();close()}});
+      $$('[data-seq-del]').forEach(x=>x.onclick=e=>{e.stopPropagation();let p=getPresets();if(p.length>1){p.splice(+x.dataset.seqDel,1);savePresets(p);sequenceSettings()}});
+      $('#seqPresetSave').onclick=()=>{let name=$('#seqPresetName').value.trim(),pages=parseFloat($('#seqPresetPages').value),perPage=parseFloat($('#seqPresetPerPage').value);if(!name){alert('프리셋 이름을 입력해주세요.');return}if(!Number.isFinite(pages)||pages<=0||!Number.isFinite(perPage)||perPage<=0){alert('올바른 페이지 및 러닝타임 값을 입력해주세요.');return}let p=getPresets();p.push({name,pages,perPage});savePresets(p);totalPages.value=pages;minutesPerPage.value=perPage;calculate();sequenceSettings()};
     }
-
-    presetChips.addEventListener('click', (e) => {
-      const delIdx = e.target.getAttribute('data-del');
-      if (delIdx !== null) {
-        e.stopPropagation();
-        let presets = getPresets();
-        presets.splice(Number(delIdx), 1);
-        savePresets(presets);
-        renderPresets();
-        return;
-      }
-
-      const chip = e.target.closest('.preset-chip');
-      if (chip) {
-        const idx = chip.getAttribute('data-index');
-        const presets = getPresets();
-        const p = presets[idx];
-        if (p) {
-          totalPages.value = p.pages;
-          minutesPerPage.value = p.perPage;
-          calculate();
-        }
-      }
-    });
-
-    savePresetBtn.addEventListener('click', () => {
-      const name = presetNameInput.value.trim();
-      const pages = Number.parseFloat(totalPages.value);
-      const perPage = Number.parseFloat(minutesPerPage.value);
-
-      if (!name) {
-        alert('프리셋 이름을 입력해주세요.');
-        presetNameInput.focus();
-        return;
-      }
-      if (!Number.isFinite(pages) || pages <= 0 || !Number.isFinite(perPage) || perPage <= 0) {
-        alert('올바른 페이지 및 러닝타임 값을 입력해주세요.');
-        return;
-      }
-
-      const presets = getPresets();
-      presets.push({ name, pages, perPage });
-      savePresets(presets);
-      presetNameInput.value = '';
-      renderPresets();
-    });
+    if(seqGear)seqGear.onclick=sequenceSettings;
 
     const labels = [
       '1 시퀀스 - 전',
@@ -928,7 +910,6 @@ const root = document.querySelector('#sequenceView #sequence-calculator');
       calculate();
     });
 
-    renderPresets();
     calculate();
   
 }
