@@ -575,7 +575,9 @@ body.a4 .char{text-align:left;font-weight:700}body.focus #top,body.focus #bottom
   }
   #sequenceView .table-wrap{border-radius:12px}
   #sequenceView table{table-layout:fixed}
-  #sequenceView th,#sequenceView td{padding:7px 8px;line-height:1.22}
+  #sequenceView th,#sequenceView td{padding:10px 10px;line-height:1.32}
+  #sequenceView th{font-size:13px}
+  #sequenceView td{font-size:14px}
   #sequenceView th:nth-child(1),#sequenceView td:nth-child(1){width:62px;text-align:center}
   #sequenceView th:nth-child(2),#sequenceView td:nth-child(2){text-align:left}
   #sequenceView th:nth-child(3),#sequenceView td:nth-child(3){width:170px;text-align:center}
@@ -800,12 +802,30 @@ const root = document.querySelector('#sequenceView #sequence-calculator');
       localStorage.setItem('seq_presets', JSON.stringify(presets));
     }
 
+    const SEQ_LAST_KEY = 'seq_last_values';
+    function saveLastValues() {
+      const pages = Number.parseFloat(totalPages.value);
+      const perPage = Number.parseFloat(minutesPerPage.value);
+      if (Number.isFinite(pages) && pages > 0 && Number.isFinite(perPage) && perPage > 0) {
+        localStorage.setItem(SEQ_LAST_KEY, JSON.stringify({pages, perPage}));
+      }
+    }
+    function restoreLastValues() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SEQ_LAST_KEY) || 'null');
+        if (saved && Number.isFinite(Number(saved.pages)) && Number(saved.pages) > 0 && Number.isFinite(Number(saved.perPage)) && Number(saved.perPage) > 0) {
+          totalPages.value = saved.pages;
+          minutesPerPage.value = saved.perPage;
+        }
+      } catch (e) {}
+    }
+
     function sequenceSettings(){
       const presets=getPresets();
       modal(`<h2>시퀀스 설정</h2><div class="small">규격 프리셋</div><div class="seqSettingsPresets">${presets.map((p,i)=>`<button class="preset-chip" type="button" data-seq-preset="${i}"><span>${esc(p.name)} (${p.pages}p / ${p.perPage}분)</span>${presets.length>1?`<span class="preset-del" data-seq-del="${i}">✕</span>`:''}</button>`).join('')}</div><div class="sep"></div><div class="seqSettingsGrid"><div class="seq-field"><label>예상 페이지</label><input id="seqPresetPages" type="number" min="1" step="1" value="${esc(String(totalPages.value))}"></div><div class="seq-field"><label>페이지당 러닝타임</label><input id="seqPresetPerPage" type="number" min="0.1" step="0.1" value="${esc(String(minutesPerPage.value))}"></div></div><div class="seqSettingsAdd"><input id="seqPresetName" type="text" placeholder="프리셋 이름"><button class="btn" id="seqPresetSave">프리셋 저장</button></div><div class="row end"><button class="btn" data-close>닫기</button></div>`);
-      $$('[data-seq-preset]').forEach(x=>x.onclick=e=>{if(e.target.closest('[data-seq-del]'))return;let p=getPresets()[+x.dataset.seqPreset];if(p){totalPages.value=p.pages;minutesPerPage.value=p.perPage;calculate();close()}});
+      $$('[data-seq-preset]').forEach(x=>x.onclick=e=>{if(e.target.closest('[data-seq-del]'))return;let p=getPresets()[+x.dataset.seqPreset];if(p){totalPages.value=p.pages;minutesPerPage.value=p.perPage;calculate();saveLastValues();close()}});
       $$('[data-seq-del]').forEach(x=>x.onclick=e=>{e.stopPropagation();let p=getPresets();if(p.length>1){p.splice(+x.dataset.seqDel,1);savePresets(p);sequenceSettings()}});
-      $('#seqPresetSave').onclick=()=>{let name=$('#seqPresetName').value.trim(),pages=parseFloat($('#seqPresetPages').value),perPage=parseFloat($('#seqPresetPerPage').value);if(!name){alert('프리셋 이름을 입력해주세요.');return}if(!Number.isFinite(pages)||pages<=0||!Number.isFinite(perPage)||perPage<=0){alert('올바른 페이지 및 러닝타임 값을 입력해주세요.');return}let p=getPresets();p.push({name,pages,perPage});savePresets(p);totalPages.value=pages;minutesPerPage.value=perPage;calculate();sequenceSettings()};
+      $('#seqPresetSave').onclick=()=>{let name=$('#seqPresetName').value.trim(),pages=parseFloat($('#seqPresetPages').value),perPage=parseFloat($('#seqPresetPerPage').value);if(!name){alert('프리셋 이름을 입력해주세요.');return}if(!Number.isFinite(pages)||pages<=0||!Number.isFinite(perPage)||perPage<=0){alert('올바른 페이지 및 러닝타임 값을 입력해주세요.');return}let p=getPresets();p.push({name,pages,perPage});savePresets(p);totalPages.value=pages;minutesPerPage.value=perPage;calculate();saveLastValues();sequenceSettings()};
     }
     if(seqGear)seqGear.onclick=sequenceSettings;
 
@@ -899,8 +919,8 @@ const root = document.querySelector('#sequenceView #sequence-calculator');
       }).join('');
     }
 
-    totalPages.addEventListener('input', calculate);
-    minutesPerPage.addEventListener('input', calculate);
+    totalPages.addEventListener('input', () => { calculate(); saveLastValues(); });
+    minutesPerPage.addEventListener('input', () => { calculate(); saveLastValues(); });
 
     reset.addEventListener('click', () => {
       totalPages.value = '70';
@@ -908,8 +928,10 @@ const root = document.querySelector('#sequenceView #sequence-calculator');
 
       totalPages.focus();
       calculate();
+      saveLastValues();
     });
 
+    restoreLastValues();
     calculate();
   
 }
