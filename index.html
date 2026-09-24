@@ -430,6 +430,10 @@ body.a4 .char{text-align:left;font-weight:700}body.focus #top,body.focus #bottom
 .writerFormat .btn.modeActive{background:#dde1ea;border-color:#8e98ad;color:#3f485f;box-shadow:inset 0 0 0 1px #ffffff80}
 .writerStatus{display:none}.writerStatus.show{display:block;position:fixed;right:14px;bottom:18px;z-index:150;padding:7px 10px;border:1px solid #bdbab4;border-radius:999px;background:rgba(246,245,242,.96);box-shadow:0 4px 16px #0002;color:#5f5c56;font-size:11px;pointer-events:none}
 .writerMenuWrap{position:relative;display:flex}.writerMore{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:100;min-width:132px;padding:6px;background:#f4f3f0;border:1px solid #c8c5bf;border-radius:11px;box-shadow:0 10px 28px #0002}.writerMore.open{display:grid;gap:4px}.writerMore .btn{width:100%;text-align:left;white-space:nowrap}.writerMore .danger{color:#8d3d38}
+.writerDocSwitch{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:2px 2px 8px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+.writerDocSwitch .btn{text-align:center!important;font-weight:850;min-width:52px}
+.writerDocSwitch .btn.active{background:#397a73!important;border-color:#397a73!important;color:#fff!important;box-shadow:0 2px 7px #2d625d2e}
+
 #writerGear{display:inline-flex;align-items:center;justify-content:center}
 #writerSave{position:relative}
 #writerSave.writerDirty{background:#e5e1d7;border-color:#a79f8d;box-shadow:inset 0 0 0 1px #ffffff80}
@@ -695,7 +699,7 @@ body.a4 .char{text-align:left;font-weight:700}body.focus #top,body.focus #bottom
 
     </section>
 
-  </main></section><section id="writerView"><div class="writerShell"><div class="writerTop"><div class="workspaceNav"><button class="btn navIcon active" data-view="writer" title="작성"><svg viewBox="0 0 24 24"><path d="M4 20l4.2-1 10.6-10.6-3.2-3.2L5 15.8 4 20zM14.8 6l3.2 3.2"/></svg></button><button class="btn navIcon" data-view="review" title="퇴고"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button><button class="btn navIcon" data-view="sequence" title="시퀀스 계산기">S</button></div><div class="writerFormat"><button class="btn" id="writerScene" title="씬">#</button><button class="btn" id="writerDialogue" title="대사"><b>B</b></button><button class="btn modeActive" id="writerAction" title="지문">가</button><button class="btn" id="writerMinus">A−</button><button class="btn" id="writerPlus">A＋</button></div><div class="writerActions"><span class="writerStatus" id="writerStatus">저장 전</span><button class="btn" id="writerSave">저장</button><div class="writerMenuWrap"><button class="btn" id="writerGear" title="추가 메뉴" aria-label="추가 메뉴">⚙</button><div class="writerMore" id="writerMore"><button class="btn" data-writer-action="restore">복구</button><button class="btn" data-writer-action="txt">TXT</button><button class="btn danger" data-writer-action="clear">비우기</button></div></div></div></div><div class="writerPaperWrap"><div id="writerPaper" class="writerPaper" contenteditable="true" spellcheck="false"></div></div></div></section><div id="selbar"></div><div id="back"><div class="modal" id="modal"></div></div><input id="file" type="file" accept=".html,.htm" hidden><input id="json" type="file" accept=".json" hidden>
+  </main></section><section id="writerView"><div class="writerShell"><div class="writerTop"><div class="workspaceNav"><button class="btn navIcon active" data-view="writer" title="작성"><svg viewBox="0 0 24 24"><path d="M4 20l4.2-1 10.6-10.6-3.2-3.2L5 15.8 4 20zM14.8 6l3.2 3.2"/></svg></button><button class="btn navIcon" data-view="review" title="퇴고"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button><button class="btn navIcon" data-view="sequence" title="시퀀스 계산기">S</button></div><div class="writerFormat"><button class="btn" id="writerScene" title="씬">#</button><button class="btn" id="writerDialogue" title="대사"><b>B</b></button><button class="btn modeActive" id="writerAction" title="지문">가</button><button class="btn" id="writerMinus">A−</button><button class="btn" id="writerPlus">A＋</button></div><div class="writerActions"><span class="writerStatus" id="writerStatus">저장 전</span><button class="btn" id="writerSave">저장</button><div class="writerMenuWrap"><button class="btn" id="writerGear" title="추가 메뉴" aria-label="추가 메뉴">⚙</button><div class="writerMore" id="writerMore"><div class="writerDocSwitch"><button class="btn active" type="button" data-writer-doc="A">A</button><button class="btn" type="button" data-writer-doc="B">B</button></div><button class="btn" data-writer-action="restore">복구</button><button class="btn" data-writer-action="txt">TXT</button><button class="btn danger" data-writer-action="clear">비우기</button></div></div></div></div><div class="writerPaperWrap"><div id="writerPaper" class="writerPaper" contenteditable="true" spellcheck="false"></div></div></div></section><div id="selbar"></div><div id="back"><div class="modal" id="modal"></div></div><input id="file" type="file" accept=".html,.htm" hidden><input id="json" type="file" accept=".json" hidden>
 <script>
 const DB='revision-local-v1',VER=1,DV=1,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],uid=()=>crypto.randomUUID?crypto.randomUUID():'x'+Date.now()+Math.random();
 const H=[['minor','약수정','#f3df78'],['major','강수정','#e58f86'],['dialogue','대사','#8db8dc'],['add','추가','#b9a0d8'],['delete','삭제','#b9b9b5'],['check','확인','#9fc89b']].map(x=>({id:x[0],name:x[1],color:x[2]}));
@@ -937,8 +941,43 @@ const root = document.querySelector('#sequenceView #sequence-calculator');
 }
 
 
-const WRITER_KEY='writer-draft-v1',WRITER_CFG='writer-cfg-v1';let writerLoaded=false,writerSavedHTML='',writerSize=11;
-async function loadWriterDraft(){if(writerLoaded)return;let d=await kv(WRITER_KEY)||{html:'',savedAt:null};let wc=await kv(WRITER_CFG)||{size:11};writerSavedHTML=d.html||'';writerSize=wc.size||11;$('#writerPaper').innerHTML=writerSavedHTML;applyWriterSize();writerLoaded=true;applyWriterMode('action');setWriterDirty(false)}
+const WRITER_KEY='writer-draft-v1',WRITER_KEY_B='writer-draft-v1-B',WRITER_CFG='writer-cfg-v1',WRITER_ACTIVE='writer-active-doc-v1';
+let writerLoaded=false,writerSavedHTML='',writerSize=11,writerActiveDoc='A';
+const writerWorkingHTML={A:null,B:null};
+const writerSavedByDoc={A:'',B:''};
+
+function writerKey(doc=writerActiveDoc){return doc==='B'?WRITER_KEY_B:WRITER_KEY}
+function updateWriterDocButtons(){
+  $$('[data-writer-doc]').forEach(b=>b.classList.toggle('active',b.dataset.writerDoc===writerActiveDoc));
+}
+async function ensureWriterDocLoaded(doc){
+  if(writerWorkingHTML[doc]!==null)return;
+  let d=await kv(writerKey(doc))||{html:'',savedAt:null};
+  writerSavedByDoc[doc]=d.html||'';
+  writerWorkingHTML[doc]=d.html||'';
+}
+async function loadWriterDraft(){
+  if(writerLoaded)return;
+  let wc=await kv(WRITER_CFG)||{size:11};
+  writerSize=wc.size||11;
+  writerActiveDoc=(await kv(WRITER_ACTIVE))==='B'?'B':'A';
+  await ensureWriterDocLoaded(writerActiveDoc);
+  writerSavedHTML=writerSavedByDoc[writerActiveDoc];
+  $('#writerPaper').innerHTML=writerWorkingHTML[writerActiveDoc];
+  applyWriterSize();writerLoaded=true;applyWriterMode('action');setWriterDirty(false);updateWriterDocButtons();
+}
+async function switchWriterDoc(doc){
+  if(doc!== 'A' && doc!=='B' || doc===writerActiveDoc)return;
+  writerWorkingHTML[writerActiveDoc]=$('#writerPaper').innerHTML;
+  await ensureWriterDocLoaded(doc);
+  writerActiveDoc=doc;
+  await kv(WRITER_ACTIVE,doc);
+  writerSavedHTML=writerSavedByDoc[doc];
+  $('#writerPaper').innerHTML=writerWorkingHTML[doc];
+  applyWriterSize();applyWriterMode('action');
+  setWriterDirty(writerWorkingHTML[doc]!==writerSavedByDoc[doc]);
+  updateWriterDocButtons();
+}
 let writerMode='action',writerStatusTimer=null;
 function writerStatus(t,persist=false){let el=$('#writerStatus');el.textContent=t;el.classList.add('show');clearTimeout(writerStatusTimer);if(!persist)writerStatusTimer=setTimeout(()=>el.classList.remove('show'),1400)}
 function setWriterDirty(dirty){let b=$('#writerSave');if(b)b.classList.toggle('writerDirty',!!dirty)}
@@ -946,19 +985,43 @@ function applyWriterSize(){$('#writerPaper').style.fontSize=writerSize+'pt'}
 function insertWriterText(text){let ed=$('#writerPaper');ed.focus();let sel=getSelection();if(!sel.rangeCount||!ed.contains(sel.anchorNode)){ed.append(document.createTextNode(text));return}let r=sel.getRangeAt(0);r.deleteContents();let n=document.createTextNode(text);r.insertNode(n);r.setStartAfter(n);r.collapse(true);sel.removeAllRanges();sel.addRange(r)}
 function applyWriterMode(mode){writerMode=mode;let ed=$('#writerPaper');ed.focus();let wantBold=mode==='dialogue'||mode==='scene';let isBold=document.queryCommandState('bold');if(isBold!==wantBold)document.execCommand('bold',false,null);$('#writerDialogue').classList.toggle('modeActive',mode==='dialogue');$('#writerAction').classList.toggle('modeActive',mode==='action');$('#writerScene').classList.toggle('modeActive',mode==='scene')}
 $('#writerPaper').addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();insertWriterText('\t');setWriterDirty(true)}});
-$('#writerPaper').addEventListener('input',()=>setWriterDirty(true));
+$('#writerPaper').addEventListener('input',()=>{writerWorkingHTML[writerActiveDoc]=$('#writerPaper').innerHTML;setWriterDirty(true)});
 $('#writerPaper').addEventListener('focus',()=>{if(writerMode==='dialogue'||writerMode==='action')requestAnimationFrame(()=>applyWriterMode(writerMode))});
-$('#writerScene').onclick=()=>{applyWriterMode('scene');insertWriterText('#<$N>. ');setWriterDirty(true)};
+$('#writerScene').onclick=()=>{applyWriterMode('scene');insertWriterText('#<$N>. ');writerWorkingHTML[writerActiveDoc]=$('#writerPaper').innerHTML;setWriterDirty(true)};
 $('#writerDialogue').onclick=()=>applyWriterMode('dialogue');
 $('#writerAction').onclick=()=>applyWriterMode('action');
 $('#writerMinus').onclick=async()=>{writerSize=Math.max(8,writerSize-1);applyWriterSize();await kv(WRITER_CFG,{size:writerSize})};
 $('#writerPlus').onclick=async()=>{writerSize=Math.min(24,writerSize+1);applyWriterSize();await kv(WRITER_CFG,{size:writerSize})};
-$('#writerSave').onclick=async()=>{let html=$('#writerPaper').innerHTML;let at=new Date();await kv(WRITER_KEY,{html,savedAt:at.toISOString()});writerSavedHTML=html;setWriterDirty(false);};
-function writerRestore(){if($('#writerPaper').innerHTML===writerSavedHTML){setWriterDirty(false);return}if(confirm('마지막 저장 상태로 복구할까요?')){$('#writerPaper').innerHTML=writerSavedHTML;applyWriterMode('action');setWriterDirty(false)}}
-async function writerClear(){if(!confirm('현재 작성 원고와 저장된 복구본까지 모두 삭제할까요?'))return;if(!confirm('삭제한 작성 원고는 이 앱에서 복구할 수 없습니다. 삭제할까요?'))return;await kv(WRITER_KEY,undefined,true);$('#writerPaper').innerHTML='';writerSavedHTML='';writerLoaded=true;applyWriterMode('action');setWriterDirty(false);writerStatus('원고 삭제됨');$('#writerPaper').focus()}
+$('#writerSave').onclick=async()=>{
+  let html=$('#writerPaper').innerHTML,at=new Date();
+  await kv(writerKey(),{html,savedAt:at.toISOString()});
+  writerSavedByDoc[writerActiveDoc]=html;writerWorkingHTML[writerActiveDoc]=html;writerSavedHTML=html;setWriterDirty(false);
+};
+function writerRestore(){
+  if($('#writerPaper').innerHTML===writerSavedHTML){setWriterDirty(false);return}
+  if(confirm('마지막 저장 상태로 복구할까요?')){
+    $('#writerPaper').innerHTML=writerSavedHTML;writerWorkingHTML[writerActiveDoc]=writerSavedHTML;applyWriterMode('action');setWriterDirty(false)
+  }
+}
+async function writerClear(){
+  if(!confirm('현재 작성 원고와 저장된 복구본까지 모두 삭제할까요?'))return;
+  if(!confirm('삭제한 작성 원고는 이 앱에서 복구할 수 없습니다. 삭제할까요?'))return;
+  await kv(writerKey(),undefined,true);
+  $('#writerPaper').innerHTML='';writerSavedHTML='';writerSavedByDoc[writerActiveDoc]='';writerWorkingHTML[writerActiveDoc]='';
+  writerLoaded=true;applyWriterMode('action');setWriterDirty(false);writerStatus('원고 삭제됨');$('#writerPaper').focus()
+}
 function writerPlainText(){let ed=$('#writerPaper');let t=ed.innerText.replace(/\u00a0/g,' ');return t.replace(/\r\n?/g,'\n')}
-function writerTxt(){let text=writerPlainText();let u=URL.createObjectURL(new Blob(['\ufeff'+text],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download='DRAFT_'+new Date().toISOString().slice(0,10)+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),500)}
-$('#writerGear').onclick=e=>{e.stopPropagation();$('#writerMore').classList.toggle('open')};
-$('#writerMore').onclick=e=>{let b=e.target.closest('[data-writer-action]');if(!b)return;$('#writerMore').classList.remove('open');if(b.dataset.writerAction==='restore')writerRestore();else if(b.dataset.writerAction==='txt')writerTxt();else if(b.dataset.writerAction==='clear')writerClear()};
+function writerTxt(){
+  let text=writerPlainText(),u=URL.createObjectURL(new Blob(['\ufeff'+text],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');
+  a.href=u;a.download='DRAFT_'+writerActiveDoc+'_'+new Date().toISOString().slice(0,10)+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),500)
+}
+$('#writerGear').onclick=e=>{e.stopPropagation();updateWriterDocButtons();$('#writerMore').classList.toggle('open')};
+$('#writerMore').onclick=async e=>{
+  let doc=e.target.closest('[data-writer-doc]');
+  if(doc){e.stopPropagation();await switchWriterDoc(doc.dataset.writerDoc);return}
+  let b=e.target.closest('[data-writer-action]');if(!b)return;
+  $('#writerMore').classList.remove('open');
+  if(b.dataset.writerAction==='restore')writerRestore();else if(b.dataset.writerAction==='txt')writerTxt();else if(b.dataset.writerAction==='clear')writerClear()
+};
 document.addEventListener('click',e=>{if(!e.target.closest('.writerMenuWrap'))$('#writerMore')?.classList.remove('open')});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('./sw.js').catch(()=>{})}</script></body></html>
